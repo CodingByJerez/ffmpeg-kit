@@ -32,11 +32,17 @@ jobs:
       - name: Create prebuilt folder
         run: mkdir -p prebuilt
 
-      - name: Verify framework presence
-        run: ls -la ffmpegkit.xcframework
+      - name: Find generated XCFramework
+        id: find_xcframework
+        run: |
+          XCFRAMEWORK_PATH=$(find . -name "*.xcframework" -type d | head -n 1)
+          echo "XCFRAMEWORK_PATH=$XCFRAMEWORK_PATH" >> $GITHUB_ENV
+
+      - name: Show framework path
+        run: echo "Found XCFramework at $XCFRAMEWORK_PATH"
 
       - name: Zip built xcframework
-        run: zip -r prebuilt/ffmpeg-kit-full-${{ github.ref_name }}-ios-xcframework.zip ffmpegkit.xcframework
+        run: zip -r prebuilt/ffmpeg-kit-full-${{ github.ref_name }}-ios-xcframework.zip "$XCFRAMEWORK_PATH"
 
       - name: Upload XCFramework to GitHub Release
         uses: softprops/action-gh-release@v1
