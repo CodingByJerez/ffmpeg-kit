@@ -17,7 +17,7 @@ jobs:
         run: brew install cmake nasm yasm pkg-config
 
       - name: Build ffmpeg-kit ios full gpl
-        run: ./ios.sh -x -gpl
+        run: ./ios.sh --xcframework --enable-ios-avfoundation --enable-ios-videotoolbox --enable-ios-audiotoolbox --enable-ios-libiconv --enable-ios-zlib
 
       - name: Upload XCFramework to GitHub Release
         uses: softprops/action-gh-release@v1
