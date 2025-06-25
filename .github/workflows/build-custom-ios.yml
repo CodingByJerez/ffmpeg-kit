@@ -1,0 +1,49 @@
+name: Build Custom FFmpegKit iOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-custom-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: brew install cmake nasm yasm pkg-config
+
+      - name: Generate minimal FFmpeg config script
+        run: |
+          cat <<EOT > build_custom.sh
+          #!/bin/bash
+          ./ios.sh \
+            --enable-decoder=h264 \
+            --enable-decoder=aac \
+            --enable-demuxer=hls \
+            --enable-demuxer=mov \
+            --enable-protocol=https \
+            --enable-protocol=file \
+            --enable-filter=scale \
+            --enable-filter=thumbnail \
+            --enable-encoder=mjpeg \
+            --enable-muxer=image2 \
+            --enable-parser=h264 \
+            --enable-probe \
+            --disable-everything \
+            -x
+          EOT
+          chmod +x build_custom.sh
+
+      - name: Compile custom xcframework
+        run: ./build_custom.sh
+
+      - name: Upload XCFramework to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: prebuilt/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
