@@ -16,30 +16,8 @@ jobs:
       - name: Install dependencies
         run: brew install cmake nasm yasm pkg-config
 
-      - name: Generate minimal FFmpeg config script
-        run: |
-          cat <<EOT > build_custom.sh
-          #!/bin/bash
-          ./ios.sh \
-            --enable-decoder=h264 \
-            --enable-decoder=aac \
-            --enable-demuxer=hls \
-            --enable-demuxer=mov \
-            --enable-protocol=https \
-            --enable-protocol=file \
-            --enable-filter=scale \
-            --enable-filter=thumbnail \
-            --enable-encoder=mjpeg \
-            --enable-muxer=image2 \
-            --enable-parser=h264 \
-            --enable-probe \
-            --disable-everything \
-            -x
-          EOT
-          chmod +x build_custom.sh
-
-      - name: Compile custom xcframework
-        run: ./build_custom.sh
+      - name: Build ffmpeg-kit ios full gpl
+        run: ./ios.sh -x -gpl
 
       - name: Upload XCFramework to GitHub Release
         uses: softprops/action-gh-release@v1
